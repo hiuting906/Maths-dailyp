@@ -486,7 +486,7 @@ const toCSV=rows=>[HEAD,...rows.map(rowOf)].map(r=>r.map(esc).join(",")).join("\
 const escH=s=>String(s??"").replace(/[<&"]/g,c=>c==="<"?"&lt;":c==="&"?"&amp;":"&quot;");
 
 /* ===== SETUP: paste your Google Apps Script web-app URL between the quotes ===== */
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxBQAHE6YJ0nU-9xTARhtgE1VUHntRFaABGQMwNpJAyDB1LHZit2cXt9ifrYBJu2nPT/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwnvxrAiIjVHoOYh5-0-Ys5S3-K5Z-mi8XVW1kjxT_nPmxPMWJANl4ujUj6XCynt3QJ/exec";
 
 $("submitBtn").onclick=async()=>{
   if(!S.info.locked){showMsg("err","Fill in and lock your name, class and class number before submitting.");return}
