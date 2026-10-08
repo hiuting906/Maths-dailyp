@@ -79,7 +79,8 @@ h1 .hl{background:linear-gradient(transparent 62%,var(--marker) 62%,var(--marker
 @media (max-width:760px){.levels-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:440px){.levels-list{grid-template-columns:minmax(0,1fr)}}
 .lv{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-top:6px solid var(--tc);border-radius:12px;padding:10px 12px 12px;color:var(--fg);min-width:0}
-.lv:hover{border-color:var(--tc)}
+.lv:hover:not(:disabled){border-color:var(--tc)}
+.lv:disabled{opacity:.5;cursor:not-allowed}
 .lv.active{background:var(--accent-soft);border-color:var(--accent);border-top-color:var(--tc)}
 .lv .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .lv .n{font-family:var(--f-display);font-weight:800;font-size:18px;color:var(--tc)}
@@ -317,8 +318,8 @@ const KEY="eq-practice-v2";
 const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 const fresh=()=>({info:{name:"",cls:"",no:"",date:today(),locked:false},target:15,score:0,streak:0,best:0,per:{},history:[],cur:null,selected:null,submitted:0});
 let S=fresh();
-try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);if(o&&o.info)S=Object.assign(fresh(),o)}}catch(_){}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}};
+try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);if(o&&o.info){S.info=Object.assign(S.info,o.info);S.info.date=today()}}}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({info:S.info}))}catch(_){}};
 const per=l=>S.per[l]||(S.per[l]={c:0,a:0,w:0});
 
 const $=id=>document.getElementById(id);
@@ -352,7 +353,7 @@ function renderLevels(){
     const b=document.createElement("button");b.className="lv"+(S.selected===C.id?" active":"");
     b.style.setProperty("--tc",C.color);
     b.innerHTML=`<span class="top"><span class="n">${C.title}</span><span class="mk">${C.mk}</span></span><ul>${C.list}</ul><span class="meta">${C.meta}</span>`;
-    b.onclick=()=>{S.selected=C.id;newQ();};
+    b.disabled=!!S.submitted;b.onclick=()=>{if(S.submitted)return;S.selected=C.id;newQ();};
     box.appendChild(b);
   }
 }
@@ -368,6 +369,7 @@ function plainOf(html){const d=document.createElement("div");d.innerHTML=html;d.
 
 function renderSheet(){
   const sh=$("sheet");const c=S.cur;
+  if(S.submitted){sh.innerHTML=`<div class="empty"><div class="big">✓ Score submitted: ${S.score} marks</div><p>This practice is finished. To do another practice, reload the page — it will start again from 0 marks.</p></div>`;return}
   if(!c||!LEVELS[c.level-1]){S.cur=null;sh.innerHTML=`<div class="empty"><div class="big">Pick a level on the left to begin</div><p>Level 1 questions are worth 1 mark, Level 2 are worth 2, Level 3 are worth 3.<br>Reach ${S.target} marks to finish today's practice, then press "Submit score".</p></div>`;return}
   const L=LEVELS[c.level-1];
   const keys=["7","8","9","/","⌫","4","5","6","−","C","1","2","3",".","←","0"];
@@ -448,7 +450,7 @@ function showMsg(kind,html){const m=$("msg");if(!kind){m.innerHTML="";return}m.i
 
 $("resetBtn").onclick=()=>{$("resetConfirm").hidden=false};
 $("resetNo").onclick=()=>{$("resetConfirm").hidden=true};
-$("resetYes").onclick=()=>{const info=S.info;S=fresh();S.info=info;S.info.date=today();save();$("resetConfirm").hidden=true;showMsg("","");renderAll()};
+$("resetYes").onclick=()=>{if(S.submitted)return;const info=S.info;S=fresh();S.info=info;S.info.date=today();save();$("resetConfirm").hidden=true;showMsg("","");renderAll()};
 
 /* ---------- scratchpad ---------- */
 const cv=$("pad"),wrapEl=cv.parentElement;let ctx=cv.getContext("2d"),tool="pen",drawing=false,last=null,padInit=false;
@@ -490,15 +492,17 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwnvxrAiIjVHoOYh5-0-Ys
 
 $("submitBtn").onclick=async()=>{
   if(!S.info.locked){showMsg("err","Fill in and lock your name, class and class number before submitting.");return}
+  if(S.submitted){showMsg("info","You've already submitted this practice.");return}
   if(S.history.length===0){showMsg("err","You haven't answered any questions yet.");return}
   const r=record();const btn=$("submitBtn");btn.disabled=true;btn.textContent="Submitting…";
   try{
     if(!/^https:\/\/script\.google\.com\//.test(SCRIPT_URL))throw new Error("not configured");
     await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(r)});
-    S.submitted++;save();
-    showMsg("done",`✓ Submitted: ${escH(r.name)} (${escH(r.cls)}, No. ${escH(r.no)}) — ${r.score} marks. Your teacher will receive your score.${r.completed?"":" You can keep practising and submit again later."}`);
+    S.submitted=1;S.cur=null;
+    showMsg("done",`✓ Submitted: ${escH(r.name)} (${escH(r.cls)}, No. ${escH(r.no)}) — ${r.score} marks. Your teacher will receive your score.`);
+    renderAll();return;
   }catch(err){fallback(r,err)}
-  btn.disabled=false;btn.textContent=S.submitted?"📤 Submit again":"📤 Submit score";
+  btn.disabled=false;btn.textContent="📤 Submit score";
 };
 function fallback(r,err){
   const csv=toCSV([r]);
@@ -509,7 +513,8 @@ function fallback(r,err){
 }
 
 function renderAll(){renderInfo();renderStats();renderLevels();renderSheet();
-  $("submitBtn").textContent=S.submitted?"📤 Submit again":"📤 Submit score"}
+  const sb=$("submitBtn");sb.disabled=!!S.submitted;sb.textContent=S.submitted?"✓ Submitted":"📤 Submit score";
+  $("resetBtn").hidden=!!S.submitted;$("lockBtn").disabled=!!S.submitted}
 if(!S.info.date)S.info.date=today();
 renderAll();
 })();
