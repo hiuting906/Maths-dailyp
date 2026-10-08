@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linear Equations Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;700;800&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: exercise-book page — student strip on top, level ladder | question sheet | graph-paper scratchpad */
+:root{
+  --bg:#f4f6fa; --paper:#ffffff; --fg:#17233d; --muted:#5d6a83; --line:#dbe1ec; --soft:#eef2f9;
+  --accent:#2c56c9; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --marker:#ffd54a; --ok:#1f8a54; --ok-soft:#e2f4ea; --bad:#cf3f3a; --bad-soft:#fbe7e5; --warn:#b97a00; --warn-soft:#fff3d6;
+  --t1:#2f9e63; --t2:#d79b12; --t3:#d4523f;
+  --grid:#d9e3f5;
+  --f-display:"Lexend",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;
+  --f-math:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1524; --paper:#171f33; --fg:#e7ecf7; --muted:#9aa6bf; --line:#2a3550; --soft:#1d2740;
+  --accent:#7d9cff; --accent-ink:#0f1524; --accent-soft:#24315a;
+  --marker:#e8bf35; --ok:#4cc58a; --ok-soft:#173326; --bad:#ff7a72; --bad-soft:#3a1e1f; --warn:#f0b43a; --warn-soft:#3a2f14;
+  --t1:#44b97a; --t2:#e2ad2c; --t3:#ec6c58; --grid:#26324d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1524; --paper:#171f33; --fg:#e7ecf7; --muted:#9aa6bf; --line:#2a3550; --soft:#1d2740;
+  --accent:#7d9cff; --accent-ink:#0f1524; --accent-soft:#24315a;
+  --marker:#e8bf35; --ok:#4cc58a; --ok-soft:#173326; --bad:#ff7a72; --bad-soft:#3a1e1f; --warn:#f0b43a; --warn-soft:#3a2f14;
+  --t1:#44b97a; --t2:#e2ad2c; --t3:#ec6c58; --grid:#26324d; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15.5px;line-height:1.55}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:16px 48px;display:flex;flex-direction:column;gap:16px}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:transform .08s, filter .15s}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-ghost{background:var(--soft);color:var(--fg);border:1px solid var(--line)}
+.btn-ok{background:var(--ok);color:var(--paper)}
+.btn-warn{background:var(--marker);color:#2a2100}
+.btn:hover:not(:disabled){filter:brightness(1.06)}
+
+.strip{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:12px;align-items:end}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.field input{width:100%;border:1.5px solid var(--line);background:var(--paper);color:var(--fg);border-radius:10px;padding:9px 12px;font:inherit;font-size:16px}
+.field input[readonly]{background:var(--soft);border-color:transparent}
+@media (max-width:820px){.strip{grid-template-columns:repeat(2,minmax(0,1fr))}.strip .lockbox{grid-column:1/-1}}
+.lockbox .btn{width:100%}
+
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:3px 10px;border-radius:999px}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.15;margin:6px 0 0;text-wrap:balance}
+h1 .hl{background:linear-gradient(transparent 62%,var(--marker) 62%,var(--marker) 92%,transparent 92%);padding:0 2px}
+.sub{color:var(--muted);margin:4px 0 0;max-width:68ch}
+
+.stats{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 14px;display:flex;flex-direction:column;justify-content:center;min-width:110px}
+.stat .k{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em}
+.stat .v{font-family:var(--f-display);font-weight:800;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.2}
+.goal{flex:1 1 260px;min-width:0}
+.meter{height:10px;background:var(--soft);border-radius:999px;overflow:hidden;margin-top:6px}
+.meter>i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .4s}
+.goal.done .meter>i{background:var(--ok)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.main{display:grid;grid-template-columns:290px minmax(0,1fr);gap:16px;align-items:start}
+.main.with-pad{grid-template-columns:290px minmax(0,1fr) minmax(0,360px)}
+@media (max-width:1100px){.main.with-pad{grid-template-columns:260px minmax(0,1fr)}.main.with-pad .pad{grid-column:1/-1}}
+@media (max-width:760px){.main,.main.with-pad{grid-template-columns:minmax(0,1fr)}}
+
+.levels{display:flex;flex-direction:column;gap:8px}
+.levels h2{font-family:var(--f-display);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 2px;font-weight:700}
+.levels-list{display:flex;flex-direction:column;gap:10px}
+@media (max-width:760px){.levels-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:440px){.levels-list{grid-template-columns:minmax(0,1fr)}}
+.lv{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-top:6px solid var(--tc);border-radius:12px;padding:10px 12px 12px;color:var(--fg);min-width:0}
+.lv:hover{border-color:var(--tc)}
+.lv.active{background:var(--accent-soft);border-color:var(--accent);border-top-color:var(--tc)}
+.lv .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lv .n{font-family:var(--f-display);font-weight:800;font-size:18px;color:var(--tc)}
+.lv .mk{font-size:12px;font-weight:700;background:var(--soft);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.lv ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.lv li{font-family:var(--f-math);font-size:15px;white-space:nowrap;overflow-x:auto}
+.lv .meta{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.qtag{font-weight:700;color:var(--muted);font-size:13px}
+.qtag b{color:var(--fg)}
+.eqbox{background:var(--soft);border-radius:12px;padding:26px 12px;text-align:center;overflow-x:auto}
+.eq{font-family:var(--f-math);font-size:clamp(24px,4.4vw,38px);white-space:nowrap;display:inline-flex;align-items:center;gap:.05em;line-height:1}
+.eq i,.hint i,.pv i,.lv i,.fb i{font-style:italic;font-family:var(--f-math)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .12em}
+.fr>span{padding:0 .18em;line-height:1.2}
+.fr>span:first-child{border-bottom:.06em solid currentColor}
+.eq .fr{font-size:.86em}
+.ansrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
+.ansrow .xeq{font-family:var(--f-math);font-size:28px;font-style:italic;color:var(--accent)}
+#ans{font-family:var(--f-math);font-size:26px;width:min(240px,100%);text-align:center;border:2px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--paper);color:var(--fg)}
+#ans.bad{border-color:var(--bad)}
+.pv{min-height:44px;display:flex;align-items:center;justify-content:center;font-family:var(--f-math);font-size:22px;color:var(--muted)}
+.keypad{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:420px;margin:0 auto;width:100%}
+.key{background:var(--paper);border:1.5px solid var(--line);border-bottom-width:3px;border-radius:10px;padding:10px 0;font-family:var(--f-display);font-weight:700;font-size:18px;color:var(--fg)}
+.key.op{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.key.del{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.qbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.qbtns .btn{min-width:140px}
+.fb{border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}
+.fb.bad{background:var(--bad-soft)}
+.fb .t{font-weight:700;font-size:16px}
+.fb.bad .t{color:var(--bad)}
+.hint{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:8px 12px;color:var(--fg)}
+.hint .hk{font-size:11.5px;font-weight:700;color:var(--warn);letter-spacing:.08em;text-transform:uppercase;margin-right:6px}
+.hint .heq{font-family:var(--f-math);font-size:19px;white-space:nowrap;overflow-x:auto;display:block;padding-top:4px}
+.empty{text-align:center;color:var(--muted);padding:40px 12px}
+.empty .big{font-family:var(--f-display);font-size:20px;font-weight:700;color:var(--fg)}
+.tip{font-size:12.5px;color:var(--muted);text-align:center}
+
+.pad{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.padtools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.padtools .sp{flex:1}
+.tool{border:1.5px solid var(--line);background:var(--paper);color:var(--fg);border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700}
+.tool.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.canvaswrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);
+  background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:22px 22px;height:460px;touch-action:none}
+#pad{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+
+.banner{border-radius:12px;padding:12px 16px;font-weight:700;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner.done{background:var(--ok-soft);color:var(--ok)}
+.banner.info{background:var(--accent-soft);color:var(--fg)}
+.banner.err{background:var(--bad-soft);color:var(--bad)}
+.copybox{width:100%;min-height:90px;font-family:ui-monospace,monospace;font-size:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--fg);padding:8px}
+
+.teacher{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.teacher h2{font-family:var(--f-display);margin:0;font-size:20px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{background:var(--soft);font-size:11.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.pill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700}
+.pill.y{background:var(--ok-soft);color:var(--ok)} .pill.n{background:var(--warn-soft);color:var(--warn)}
+.small{font-size:13px;color:var(--muted)}
+a{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
+.pop{animation:pop .3s ease}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <section class="strip" aria-label="Student details">
+    <div class="field"><label for="f-name">Name</label><input id="f-name" autocomplete="off" placeholder="Your name"></div>
+    <div class="field"><label for="f-cls">Class</label><input id="f-cls" autocomplete="off" placeholder="e.g. 2A"></div>
+    <div class="field"><label for="f-no">Class No.</label><input id="f-no" inputmode="numeric" autocomplete="off" placeholder="e.g. 15"></div>
+    <div class="field"><label for="f-date">Date</label><input id="f-date" type="date"></div>
+    <div class="lockbox"><button class="btn btn-primary" id="lockBtn">🔒 Lock details</button></div>
+  </section>
+
+  <header class="head">
+    <div>
+      <span class="eyebrow">Daily Maths Practice</span>
+      <h1>Solving <span class="hl">Linear Equations</span> in One Unknown</h1>
+      <p class="sub">Choose a level to start. If you get it wrong you'll get a hint, never the answer. Type fractions like −3/4.</p>
+    </div>
+  </header>
+
+  <section class="stats" aria-label="Progress">
+    <div class="stat goal" id="goalBox">
+      <span class="k">TODAY'S GOAL · SCORE</span>
+      <span class="v"><span id="sScore">0</span> / <span id="sTarget">15</span> marks</span>
+      <div class="meter"><i id="sMeter" style="width:0%"></i></div>
+    </div>
+    <div class="stat"><span class="k">🔥 STREAK</span><span class="v" id="sStreak">0</span></div>
+    <div class="stat"><span class="k">✓ CORRECT</span><span class="v" id="sCorrect">0</span></div>
+    <div class="actions">
+      <button class="btn btn-warn" id="padBtn">✏️ Scratchpad</button>
+      <button class="btn btn-ok" id="submitBtn">📤 Submit score</button>
+    </div>
+  </section>
+
+  <div id="msg"></div>
+
+  <div class="main" id="main">
+    <aside class="levels">
+      <h2>Select a level</h2>
+      <div class="levels-list" id="levels"></div>
+      <button class="btn btn-ghost" id="resetBtn" style="margin-top:6px">Start over</button>
+      <div id="resetConfirm" hidden class="banner err" style="font-size:13px">Clear all of today's marks?
+        <button class="btn btn-ghost" id="resetYes" style="padding:6px 10px">Yes, clear</button>
+        <button class="btn btn-ghost" id="resetNo" style="padding:6px 10px">Cancel</button></div>
+    </aside>
+
+    <section class="sheet" id="sheet" aria-live="polite"></section>
+
+    <section class="pad" id="padPanel" hidden aria-label="Scratchpad">
+      <div class="padtools">
+        <strong>Scratchpad</strong><span class="sp"></span>
+        <button class="tool on" data-tool="pen">Pen</button>
+        <button class="tool" data-tool="red">Red pen</button>
+        <button class="tool" data-tool="eraser">Eraser</button>
+        <button class="tool" id="padClear">Clear</button>
+      </div>
+      <div class="canvaswrap"><canvas id="pad"></canvas></div>
+      <div class="small">Write your working with a finger, stylus or mouse. The scratchpad is not submitted.</div>
+    </section>
+  </div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- maths helpers ---------- */
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1};
+const lcm=(a,b)=>Math.abs(a*b)/gcd(a,b);
+const Q=(n,d=1)=>{if(d<0){n=-n;d=-d}const g=gcd(n,d);return{n:n/g,d:d/g}};
+const qeq=(a,b)=>a.n*b.d===b.n*a.d;
+const ri=(a,b)=>{if(a>b)[a,b]=[b,a];return a+Math.floor(Math.random()*(b-a+1))};
+const nz=(a,b)=>{let v;do{v=ri(a,b)}while(v===0);return v};
+const M="−", X="<i>x</i>";
+const num=n=>n<0?M+Math.abs(n):String(n);
+const lead=k=>k===1?"":k===-1?M:num(k);
+const coefX=k=>k===1?" + ":k===-1?" "+M+" ":k>0?" + "+k:" "+M+" "+Math.abs(k);
+const cst=k=>k>0?" + "+k:k<0?" "+M+" "+Math.abs(k):"";
+const fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const qh=q=>q.d===1?num(q.n):(q.n<0?M:"")+fr(Math.abs(q.n),q.d);
+const lin=(a,b)=>`${lead(a)}${X}${cst(b)}`;
+const e=(l,r)=>`<span class="eq">${l} = ${r}</span>`;
+
+/* ---------- question types (ported from the LaTeX macros) ---------- */
+const TYPES={
+ 1:`a${X} + b = c`,
+ 2:`a${X} + b = d${X} + e`,
+ 3:`a(b${X} + c) = d${X} + e`,
+ 4:`a(b${X} + c) + d(e${X} + f) = g`,
+ 5:`${fr("a"+X+" + b","c")} = ${fr("d"+X+" + e","f")}`,
+ 6:`${fr("a"+X+" + b","c")} ± ${fr("d"+X+" + e","f")} = ${fr("g","h")}`,
+ 7:`a[b${X} + c(d${X} + e)] = f${X} + g`
+};
+const LEVELS=[
+ {id:1,marks:1,types:[1,2],color:"var(--t1)"},
+ {id:2,marks:2,types:[3,4,5],color:"var(--t2)"},
+ {id:3,marks:3,types:[6,7],color:"var(--t3)"}
+];
+const levelOfType=t=>LEVELS.find(L=>L.types.includes(t));
+const finalHint="Collect like terms, then divide both sides by the coefficient of <i>x</i> (sign included). The answer may be a fraction — simplify it.";
+
+const GEN={
+ 1(){ const a=nz(-20,20),b=nz(-10,10),c=ri(-25,25);
+   return {html:e(lin(a,b),num(c)),k:a,m:c-b,
+    hints:[`Aim to get <i>x</i> on its own. Deal with the constant ${num(b)} first: when it moves across the equals sign, its sign changes.`,
+      `${b>0?"Subtract":"Add"} ${Math.abs(b)} ${b>0?"from":"to"} both sides: <span class="heq">${lead(a)}${X} = ${num(c)} ${b>0?M:"+"} ${Math.abs(b)}</span>`,
+      a===1?"The left side is already just <i>x</i> — work out the right side.":`Finally, divide both sides by ${num(a)} (sign included). The answer may be a fraction.`]}},
+ 2(){ const a=nz(-15,15);let b;do{b=nz(-15,15)}while(b===a);const ans=ri(-15,15),c=ri(-15,15),d=(a-b)*ans+c;
+   return {html:e(lin(a,c),lin(b,d)),k:a-b,m:d-c,
+    hints:["Move the <i>x</i> terms to the left and the numbers to the right. Any term that crosses the equals sign changes sign.",
+      `After moving terms: <span class="heq">${lead(a)}${X}${coefX(-b)}${X} = ${num(d)}${cst(-c)}</span>`,finalHint]}},
+ 3(){ let a,b,c,d,ans;do{a=nz(-5,5);b=nz(-15,15);c=ri(-15,15);d=nz(-15,15);ans=nz(-15,15)}while(a*b-d===0);
+   const f=(a*b-d)*ans+a*c;
+   return {html:e(`${lead(a)}(${lin(b,c)})`,lin(d,f)),k:a*b-d,m:f-a*c,
+    hints:[`Expand the bracket first: the ${num(a)} outside multiplies <b>every</b> term inside.`,
+      `After expanding: <span class="heq">${lin(a*b,a*c)} = ${lin(d,f)}</span>`,
+      "Move the <i>x</i> terms to the left and the numbers to the right (change sign when crossing). Then: "+finalHint]}},
+ 4(){ let a,b,c,d,f,g,ans;do{a=nz(-5,5);b=nz(-15,15);c=nz(-15,15);d=nz(-5,5);f=nz(-5,10);g=nz(-5,5);ans=nz(-15,15)}while(a*b+d*f===0);
+   const h=(a*b+d*f)*ans+a*c+d*g;
+   const left=(a===1?lin(b,c):`${lead(a)}(${lin(b,c)})`)+`${d===1?" + ":d===-1?" "+M+" ":d>0?" + "+d:" "+M+" "+Math.abs(d)}(${lin(f,g)})`;
+   return {html:e(left,num(h)),k:a*b+d*f,m:h-a*c-d*g,
+    hints:[`Expand both brackets. The second bracket is multiplied by ${num(d)} — its sign goes in too.`,
+      `After expanding: <span class="heq">${lin(a*b,a*c)}${coefX(d*f)}${X}${cst(d*g)} = ${num(h)}</span>`,
+      "Collect like terms (<i>x</i> terms together, numbers together), then move the number to the right. Then: "+finalHint]}},
+ 5(){ let a,b,c,d,f,g;do{a=nz(-5,5);b=nz(-5,5);c=ri(2,10);d=nz(-5,5);f=nz(-7,7);g=ri(2,10)}while(a*g-c*d===0);
+   return {html:e(fr(lin(a,b),c),fr(lin(d,f),g)),k:a*g-c*d,m:c*f-g*b,
+    hints:[`Both sides have a denominator. Cross-multiply: multiply both sides by ${c} × ${g} to clear the fractions.`,
+      `After cross-multiplying: <span class="heq">${g}(${lin(a,b)}) = ${c}(${lin(d,f)})</span>`,
+      "Expand the brackets and move terms across. Then: "+finalHint]}},
+ 6(){ let a,b,c,d,f,g,ans,s;do{a=nz(-5,5);b=nz(-5,5);c=ri(2,7);d=nz(-5,5);f=nz(-7,7);g=ri(2,7);ans=nz(-5,5);s=Math.random()<.5?-1:1}while(a*g+s*d*c===0);
+   const R=Q((a*ans+b)*g+s*c*(d*ans+f),c*g);
+   const L=lcm(lcm(c,g),R.d);
+   const k=a*L/c+s*d*L/g, m=R.n*L/R.d-b*L/c-s*f*L/g;
+   const sg=s>0?" + ":" "+M+" ";
+   return {html:e(`${fr(lin(a,b),c)}${sg}${fr(lin(d,f),g)}`,qh(R)),k,m,
+    hints:[`Find the L.C.M. of all the denominators (${c}, ${g}${R.d>1?", "+R.d:""}), then multiply <b>every</b> term of the equation by it.`,
+      `The L.C.M. is ${L}. After multiplying: <span class="heq">${L/c===1?"":L/c}(${lin(a,b)})${sg}${L/g===1?"":L/g}(${lin(d,f)}) = ${num(R.n*L/R.d)}</span>`,
+      (s<0?"Careful: when you expand the bracket after the minus sign, every term inside changes sign. ":"When expanding, the number outside multiplies every term inside. ")+"Then: "+finalHint]}},
+ 7(){ let a,b,c,d,f,g,ans;do{a=nz(-5,5);b=nz(-7,7);c=nz(-5,5);d=nz(-5,5);f=nz(-5,7);g=nz(-5,5);ans=nz(-7,7)}while(b+c*d===0||a*(b+c*d)-g===0);
+   const h=a*(b*ans+c*(d*ans+f))-g*ans;
+   const inner=`${lead(b)}${X}${c===1?" + ":c===-1?" "+M+" ":c>0?" + "+c:" "+M+" "+Math.abs(c)}(${lin(d,f)})`;
+   const left=a===1?inner:`${lead(a)}[${inner}]`;
+   const in2=lin(b+c*d,c*f);
+   return {html:e(left,lin(g,h)),k:a*(b+c*d)-g,m:h-a*c*f,
+    hints:["Work from the inside out: expand the round brackets ( ) first, collect like terms, then deal with the square brackets [ ].",
+      `After expanding the round brackets and collecting terms: <span class="heq">${a===1?in2:lead(a)+"("+in2+")"} = ${lin(g,h)}</span>`,
+      (a===1?"":`Now multiply ${num(a)} into every term, `)+"then move terms across. "+finalHint]}}
+};
+function makeQuestion(type){const q=GEN[type]();q.type=type;q.ans=Q(q.m,q.k);return q}
+
+/* ---------- answer parsing ---------- */
+function parseAns(s){
+  s=s.replace(/[−–—]/g,"-").replace(/\s+/g,"");
+  if(!s)return null;
+  let m;
+  if((m=s.match(/^(-?)(\d+)\/(\d+)$/))){const d=+m[3];if(!d)return null;return{q:Q((m[1]?-1:1)*+m[2],d),raw:{n:(m[1]?-1:1)*+m[2],d}}}
+  if((m=s.match(/^(-?)(\d*)\.?(\d*)$/))&&(m[2]||m[3])){const ip=m[2]||"0",fp=m[3]||"";const d=10**fp.length;const n=(+ip)*d+(+(fp||0));return{q:Q((m[1]?-1:1)*n,d),raw:null}}
+  return null;
+}
+function pvHtml(s){const p=parseAns(s);if(!p)return s?`<span style="color:var(--bad);font-family:var(--f-body);font-size:15px">Not a number yet</span>`:"";const r=p.raw||p.q;return `<i>x</i>&nbsp;=&nbsp;${r.d===1?num(r.n):(r.n<0?M:"")+fr(Math.abs(r.n),r.d)}`}
+
+/* ---------- state ---------- */
+const KEY="eq-practice-v2";
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const fresh=()=>({info:{name:"",cls:"",no:"",date:today(),locked:false},target:15,score:0,streak:0,best:0,per:{},history:[],cur:null,selected:null,submitted:0});
+let S=fresh();
+try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);if(o&&o.info)S=Object.assign(fresh(),o)}}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}};
+const per=l=>S.per[l]||(S.per[l]={c:0,a:0,w:0});
+
+const $=id=>document.getElementById(id);
+const F={name:$("f-name"),cls:$("f-cls"),no:$("f-no"),date:$("f-date")};
+function renderInfo(){
+  for(const k in F){F[k].value=S.info[k]||"";F[k].readOnly=S.info.locked}
+  $("lockBtn").textContent=S.info.locked?"🔓 Unlock to edit":"🔒 Lock details";
+}
+for(const k in F)F[k].addEventListener("input",()=>{S.info[k]=F[k].value;save()});
+$("lockBtn").onclick=()=>{
+  if(!S.info.locked){
+    if(!S.info.name.trim()||!S.info.cls.trim()||!S.info.no.trim()){showMsg("err","Fill in your name, class and class number before locking.");return}
+    S.info.locked=true;showMsg("","");
+  }else S.info.locked=false;
+  save();renderInfo();
+};
+
+function renderStats(){
+  $("sScore").textContent=S.score;$("sTarget").textContent=S.target;
+  $("sMeter").style.width=Math.min(100,S.score/S.target*100)+"%";
+  $("goalBox").classList.toggle("done",S.score>=S.target);
+  $("sStreak").textContent=S.streak;
+  $("sCorrect").textContent=Object.values(S.per).reduce((t,p)=>t+p.c,0);
+}
+function renderLevels(){
+  const box=$("levels");box.innerHTML="";
+  const cards=LEVELS.map(L=>({id:L.id,title:"Level "+L.id,mk:L.marks+(L.marks===1?" mark":" marks"),color:L.color,
+    list:L.types.map(t=>`<li>${TYPES[t]}</li>`).join(""),meta:`Correct: ${per(L.id).c}`}));
+  cards.push({id:"mix",title:"Mixed",mk:"1–3 marks",color:"var(--accent)",list:`<li style="font-family:var(--f-body);font-size:14px">Random questions from all levels</li>`,meta:"Marks follow each question's level"});
+  for(const C of cards){
+    const b=document.createElement("button");b.className="lv"+(S.selected===C.id?" active":"");
+    b.style.setProperty("--tc",C.color);
+    b.innerHTML=`<span class="top"><span class="n">${C.title}</span><span class="mk">${C.mk}</span></span><ul>${C.list}</ul><span class="meta">${C.meta}</span>`;
+    b.onclick=()=>{S.selected=C.id;newQ();};
+    box.appendChild(b);
+  }
+}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function newQ(){
+  const L=S.selected==="mix"?pick(LEVELS):LEVELS[S.selected-1];
+  const q=makeQuestion(pick(L.types));
+  S.cur={level:L.id,type:q.type,html:q.html,k:q.k,m:q.m,ans:q.ans,hints:q.hints,tries:0,solved:false,input:"",fbs:[]};
+  save();renderLevels();renderSheet();
+  setTimeout(()=>{const a=$("ans");a&&a.focus({preventScroll:true})},30);
+}
+function plainOf(html){const d=document.createElement("div");d.innerHTML=html;d.querySelectorAll(".fr").forEach(f=>{const s=f.children;f.replaceWith("("+s[0].textContent+")/("+s[1].textContent+")")});return d.textContent.replace(/\s+/g," ").trim()}
+
+function renderSheet(){
+  const sh=$("sheet");const c=S.cur;
+  if(!c||!LEVELS[c.level-1]){S.cur=null;sh.innerHTML=`<div class="empty"><div class="big">Pick a level on the left to begin</div><p>Level 1 questions are worth 1 mark, Level 2 are worth 2, Level 3 are worth 3.<br>Reach ${S.target} marks to finish today's practice, then press "Submit score".</p></div>`;return}
+  const L=LEVELS[c.level-1];
+  const keys=["7","8","9","/","⌫","4","5","6","−","C","1","2","3",".","←","0"];
+  const label={"⌫":"Delete","C":"Clear","←":"Move cursor left","/":"Fraction bar","−":"Minus",".":"Decimal point"};
+  sh.innerHTML=`
+   <div class="qhead"><span class="qtag">${S.selected==="mix"?"Mixed · ":""}<b>Level ${c.level} question</b> · ${L.marks} mark${L.marks>1?"s":""} · Question ${S.history.length+1}</span>
+     <span class="qtag">${c.tries?`Tries: ${c.tries}`:"Full marks if right first time"}</span></div>
+   <div class="eqbox">${c.html}</div>
+   <div class="ansrow"><span class="xeq">x =</span><input id="ans" inputmode="none" autocomplete="off" spellcheck="false" placeholder="answer" aria-label="The value of x" value="${c.input.replace(/"/g,"")}" ${c.solved?"readonly":""}></div>
+   <div class="pv" id="pv">${pvHtml(c.input)}</div>
+   ${c.solved?"":`<div class="keypad" id="kp">${keys.map(k=>`<button class="key ${"/−.←".includes(k)?"op":k==="⌫"||k==="C"?"del":""}" data-k="${k}" aria-label="${label[k]||k}">${k==="/"?"a/b":k}</button>`).join("")}</div>`}
+   <div class="qbtns">${c.solved?`<button class="btn btn-primary" id="nextBtn">Next question →</button>`:
+     `<button class="btn btn-primary" id="checkBtn">🔍 Check</button><button class="btn btn-ghost" id="skipBtn">${c.tries>=3?"New question (0 marks)":"New question"}</button>`}</div>
+   <div id="fbArea">${c.fbs.join("")}</div>
+   ${c.solved?"":`<div class="tip">Press Enter to check. Fractions: type −3/4. Decimals also work.</div>`}`;
+  const inp=$("ans");
+  if(inp&&!c.solved){
+    inp.addEventListener("input",()=>{c.input=inp.value;$("pv").innerHTML=pvHtml(c.input);inp.classList.remove("bad");save()});
+    inp.addEventListener("keydown",ev=>{if(ev.key==="Enter"){ev.preventDefault();check()}});
+    $("kp").addEventListener("click",ev=>{const b=ev.target.closest("button");if(b)key(b.dataset.k)});
+    $("checkBtn").onclick=check;
+    $("skipBtn").onclick=skip;
+  }
+  if(c.solved)$("nextBtn").onclick=newQ;
+}
+function key(k){
+  const inp=$("ans");const c=S.cur;let v=inp.value,p=inp.selectionStart??v.length,q=inp.selectionEnd??v.length;
+  if(k==="C"){v="";p=0}
+  else if(k==="⌫"){if(p===q&&p>0){v=v.slice(0,p-1)+v.slice(q);p--}else{v=v.slice(0,p)+v.slice(q)}}
+  else if(k==="←"){p=Math.max(0,p-1);inp.focus();inp.setSelectionRange(p,p);return}
+  else{const t=k==="−"?"-":k;v=v.slice(0,p)+t+v.slice(q);p+=t.length}
+  inp.value=v;c.input=v;$("pv").innerHTML=pvHtml(v);inp.classList.remove("bad");
+  inp.focus({preventScroll:true});try{inp.setSelectionRange(p,p)}catch(_){}save();
+}
+function diagnose(v,c){
+  const a=c.ans;
+  if(a.n!==0&&qeq(v,{n:-a.n,d:a.d}))return "The size of your number is right, but the sign is wrong. Check the signs when you move terms or divide by a negative.";
+  if(c.k!==1&&c.k!==-1&&qeq(v,Q(c.m,1)))return "It looks like you haven't divided by the coefficient of <i>x</i> yet.";
+  if(c.m!==0&&qeq(v,Q(c.k,c.m)))return "You divided the wrong way round: it should be (number on the right) ÷ (coefficient of <i>x</i>).";
+  if(c.m!==0&&c.k!==1&&c.k!==-1&&qeq(v,Q(-c.m,1)))return "You haven't divided by the coefficient of <i>x</i>, and the sign needs checking too.";
+  return "";
+}
+function check(){
+  const c=S.cur;if(!c||c.solved)return;
+  const p=parseAns(c.input);
+  if(!p){c.fbs=[`<div class="fb bad"><span class="t">Please enter a number</span><span>Use a whole number, a fraction (e.g. −3/4) or a decimal.</span></div>`];renderSheet();return}
+  const L=LEVELS[c.level-1];const pl=per(c.level);
+  if(qeq(p.q,c.ans)){
+    c.solved=true;c.tries++;
+    const gained=c.tries===1?L.marks:Math.max(1,L.marks-1);
+    S.score+=gained;pl.c++;pl.a++;
+    if(c.tries===1){S.streak++;S.best=Math.max(S.best,S.streak)}
+    const note=p.raw&&c.ans.d!==1&&(p.raw.d!==c.ans.d||p.raw.n!==c.ans.n)?" Next time, give the fraction in its simplest form.":p.raw&&p.raw.d!==1&&c.ans.d===1?" This simplifies to a whole number.":"";
+    c.fbs=[`<div class="fb ok pop"><span class="t">✓ Correct! +${gained} mark${gained>1?"s":""}</span><span>${c.tries===1?"Right first time — great work!":"You fixed it — well done."}${note}</span></div>`];
+    S.history.push({level:c.level,type:c.type,eq:plainOf(c.html),tries:c.tries,correct:true,marks:gained});
+    const reached=S.score-gained<S.target&&S.score>=S.target;
+    save();renderStats();renderLevels();renderSheet();
+    if(reached)showMsg("done",`🎉 You've reached ${S.target} marks and finished today's practice! Remember to press "Submit score".`);
+    setTimeout(()=>{const n=$("nextBtn");n&&n.focus({preventScroll:true})},30);
+    return;
+  }
+  c.tries++;pl.w++;S.streak=0;
+  const d=diagnose(p.q,c);
+  const shown=Math.min(c.tries,3);
+  let h="";for(let i=0;i<shown;i++)h+=`<div class="hint"><span class="hk">Hint ${i+1}</span>${c.hints[i]}</div>`;
+  const more=c.tries>=3?`<span class="small">That's all the hints. Work through it step by step on the scratchpad, or try a new question.</span>`:"";
+  c.fbs=[`<div class="fb bad pop"><span class="t">✗ Not quite — try again</span>${d?`<span>${d}</span>`:""}${h}${more}</div>`];
+  save();renderStats();renderSheet();
+  const inp=$("ans");if(inp){inp.classList.add("bad");inp.focus({preventScroll:true});inp.select()}
+}
+function skip(){
+  const c=S.cur;
+  if(c&&c.tries>0){per(c.level).a++;S.history.push({level:c.level,type:c.type,eq:plainOf(c.html),tries:c.tries,correct:false,marks:0});S.streak=0}
+  newQ();renderStats();
+}
+
+function showMsg(kind,html){const m=$("msg");if(!kind){m.innerHTML="";return}m.innerHTML=`<div class="banner ${kind}">${html}</div>`}
+
+$("resetBtn").onclick=()=>{$("resetConfirm").hidden=false};
+$("resetNo").onclick=()=>{$("resetConfirm").hidden=true};
+$("resetYes").onclick=()=>{const info=S.info;S=fresh();S.info=info;S.info.date=today();save();$("resetConfirm").hidden=true;showMsg("","");renderAll()};
+
+/* ---------- scratchpad ---------- */
+const cv=$("pad"),wrapEl=cv.parentElement;let ctx=cv.getContext("2d"),tool="pen",drawing=false,last=null,padInit=false;
+function sizePad(){const r=wrapEl.getBoundingClientRect();const dpr=window.devicePixelRatio||1;
+  const img=padInit&&cv.width?ctx.getImageData(0,0,cv.width,cv.height):null;
+  cv.width=Math.max(1,Math.round(r.width*dpr));cv.height=Math.max(1,Math.round(r.height*dpr));ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);
+  if(img)ctx.putImageData(img,0,0);padInit=true}
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function pos(ev){const r=cv.getBoundingClientRect();return{x:ev.clientX-r.left,y:ev.clientY-r.top}}
+cv.addEventListener("pointerdown",ev=>{drawing=true;last=pos(ev);cv.setPointerCapture(ev.pointerId)});
+cv.addEventListener("pointermove",ev=>{if(!drawing)return;const p=pos(ev);
+  ctx.globalCompositeOperation=tool==="eraser"?"destination-out":"source-over";
+  ctx.strokeStyle=tool==="red"?css("--bad"):css("--fg");ctx.lineWidth=tool==="eraser"?22:2.4;ctx.lineCap="round";ctx.lineJoin="round";
+  ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p});
+["pointerup","pointercancel","pointerleave"].forEach(t=>cv.addEventListener(t,()=>{drawing=false}));
+document.querySelectorAll(".tool[data-tool]").forEach(b=>b.onclick=()=>{tool=b.dataset.tool;document.querySelectorAll(".tool[data-tool]").forEach(x=>x.classList.toggle("on",x===b))});
+$("padClear").onclick=()=>ctx.clearRect(0,0,cv.width,cv.height);
+$("padBtn").onclick=()=>{const p=$("padPanel");p.hidden=!p.hidden;$("main").classList.toggle("with-pad",!p.hidden);$("padBtn").textContent=p.hidden?"✏️ Scratchpad":"✏️ Hide scratchpad";if(!p.hidden)requestAnimationFrame(sizePad)};
+window.addEventListener("resize",()=>{if(!$("padPanel").hidden)sizePad()});
+
+/* ---------- records ---------- */
+function record(){
+  const lv={};LEVELS.forEach(L=>{lv["L"+L.id]=per(L.id).c});
+  const wrong=Object.values(S.per).reduce((t,p)=>t+p.w,0);
+  const correct=Object.values(S.per).reduce((t,p)=>t+p.c,0);
+  return {name:S.info.name.trim(),cls:S.info.cls.trim(),no:S.info.no.trim(),date:S.info.date||today(),
+    score:S.score,target:S.target,completed:S.score>=S.target,correct,wrong,bestStreak:S.best,levels:lv,
+    history:S.history.slice(-200),submittedAt:new Date().toISOString()};
+}
+const HEAD=["Submitted","Name","Class","Class No.","Practice date","Score","Target","Completed","Correct","Wrong tries","Best streak","Level 1 correct","Level 2 correct","Level 3 correct"];
+const esc=v=>{v=String(v??"");return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+const fmtTime=iso=>{try{return new Date(iso).toLocaleString("en-GB",{hour12:false})}catch(_){return iso}};
+function rowOf(r){const l=r.levels||{};return [fmtTime(r.submittedAt),r.name,r.cls,r.no,r.date,r.score,r.target,r.completed?"Yes":"No",r.correct,r.wrong,r.bestStreak??"",l.L1??0,l.L2??0,l.L3??0]}
+const toCSV=rows=>[HEAD,...rows.map(rowOf)].map(r=>r.map(esc).join(",")).join("\n");
+const escH=s=>String(s??"").replace(/[<&"]/g,c=>c==="<"?"&lt;":c==="&"?"&amp;":"&quot;");
+
+/* ===== SETUP: paste your Google Apps Script web-app URL between the quotes ===== */
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxBQAHE6YJ0nU-9xTARhtgE1VUHntRFaABGQMwNpJAyDB1LHZit2cXt9ifrYBJu2nPT/exec";
+
+$("submitBtn").onclick=async()=>{
+  if(!S.info.locked){showMsg("err","Fill in and lock your name, class and class number before submitting.");return}
+  if(S.history.length===0){showMsg("err","You haven't answered any questions yet.");return}
+  const r=record();const btn=$("submitBtn");btn.disabled=true;btn.textContent="Submitting…";
+  try{
+    if(!/^https:\/\/script\.google\.com\//.test(SCRIPT_URL))throw new Error("not configured");
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(r)});
+    S.submitted++;save();
+    showMsg("done",`✓ Submitted: ${escH(r.name)} (${escH(r.cls)}, No. ${escH(r.no)}) — ${r.score} marks. Your teacher will receive your score.${r.completed?"":" You can keep practising and submit again later."}`);
+  }catch(err){fallback(r,err)}
+  btn.disabled=false;btn.textContent=S.submitted?"📤 Submit again":"📤 Submit score";
+};
+function fallback(r,err){
+  const csv=toCSV([r]);
+  const why=err&&err.message==="not configured"?"Online submission isn't set up on this page yet.":"Couldn't send your score (check your internet connection).";
+  showMsg("err",`${why} Please give your result to your teacher: <button class="btn btn-ghost" id="fbDl">Download result file</button><button class="btn btn-ghost" id="fbCopy">Copy result</button><textarea class="copybox" id="fbTxt" readonly>${escH(csv)}</textarea>`);
+  $("fbDl").onclick=()=>{const u=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv"}));const a=document.createElement("a");a.href=u;a.download=`result_${r.cls}_${r.no}_${r.date}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+  $("fbCopy").onclick=async()=>{try{await navigator.clipboard.writeText(csv);$("fbCopy").textContent="Copied"}catch(_){const t=$("fbTxt");t.focus();t.select()}};
+}
+
+function renderAll(){renderInfo();renderStats();renderLevels();renderSheet();
+  $("submitBtn").textContent=S.submitted?"📤 Submit again":"📤 Submit score"}
+if(!S.info.date)S.info.date=today();
+renderAll();
+})();
+</script>
+</body>
+</html>
